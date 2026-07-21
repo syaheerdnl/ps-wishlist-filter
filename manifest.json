@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "PlayStation Wishlist Filter",
+  "version": "1.0.0",
+  "description": "Adds search, price range, and platform filters to your PlayStation Store wishlist page.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://library.playstation.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

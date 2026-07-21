@@ -1,0 +1,152 @@
+#psw-filter-toggle {
+  position: fixed;
+  top: 100px;
+  right: 20px;
+  z-index: 2147483647;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #003791;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+#psw-filter-toggle:hover {
+  background: #0047b8;
+  transform: scale(1.05);
+}
+
+#psw-filter-panel {
+  position: fixed;
+  top: 148px;
+  right: 20px;
+  width: 260px;
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 2147483647;
+  background: #11161d;
+  color: #e8e8e8;
+  border: 1px solid #2a3341;
+  border-radius: 8px;
+  padding: 14px;
+  font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+}
+
+#psw-filter-panel h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+#psw-filter-panel label {
+  display: block;
+  margin: 8px 0 3px;
+  color: #9aa4b2;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+#psw-filter-panel input[type="text"],
+#psw-filter-panel input[type="number"],
+#psw-filter-panel select {
+  width: 100%;
+  box-sizing: border-box;
+  background: #1c2431;
+  border: 1px solid #313d4f;
+  color: #fff;
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 12px;
+}
+
+#psw-filter-panel select {
+  appearance: auto;
+  cursor: pointer;
+}
+
+.psw-price-row {
+  display: flex;
+  gap: 6px;
+}
+
+.psw-price-row input {
+  width: 50% !important;
+}
+
+.psw-platform-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.psw-platform-row label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  text-transform: none;
+  color: #e8e8e8;
+  font-size: 12px;
+  margin: 0;
+}
+
+.psw-platform-row input {
+  width: auto;
+}
+
+#psw-filter-panel .psw-checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+#psw-filter-panel .psw-checkbox-row label {
+  text-transform: none;
+  color: #e8e8e8;
+  font-size: 12px;
+  margin: 0;
+}
+
+#psw-count {
+  margin-top: 12px;
+  color: #9aa4b2;
+  font-size: 11px;
+}
+
+#psw-export,
+#psw-reset {
+  margin-top: 10px;
+  width: 100%;
+  background: #2a3341;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 7px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+#psw-export:hover,
+#psw-reset:hover {
+  background: #384356;
+}
+
+#psw-export {
+  background: #003791;
+}
+
+#psw-export:hover {
+  background: #0047b8;
+}

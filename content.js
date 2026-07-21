@@ -28,35 +28,56 @@
     return Array.from(document.querySelectorAll('[data-qa$="-tile"].wishlist-tile'));
   }
 
-  // Scan a container's text nodes for RM prices, noting whether each one is
-  // struck through (<s>/<del>/<strike>, or CSS text-decoration: line-through) —
-  // that's how a "was" price is marked when an item is discounted.
+  // Turns a raw digit/separator chunk into a number without assuming a
+  // region's formatting convention — "1,234.56" (US), "1.234,56" (EU), and
+  // "1,200" (JPY, no decimal) all need different separator handling.
+  function normalizeNumber(raw) {
+    const lastComma = raw.lastIndexOf(',');
+    const lastDot = raw.lastIndexOf('.');
+    const lastSep = Math.max(lastComma, lastDot);
+    if (lastSep === -1) {
+      const n = parseFloat(raw);
+      return isNaN(n) ? null : n;
+    }
+    const decimalPart = raw.slice(lastSep + 1);
+    const isDecimal = /^\d{1,2}$/.test(decimalPart);
+    const integerPart = raw.slice(0, lastSep).replace(/[.,]/g, '');
+    const combined = isDecimal ? `${integerPart}.${decimalPart}` : integerPart + decimalPart;
+    const n = parseFloat(combined);
+    return isNaN(n) ? null : n;
+  }
+
+  // Scan a container's text nodes for prices, whatever currency symbol or
+  // code is in front of them (RM, $, €, ¥, USD, ...), noting whether each
+  // one is struck through (<s>/<del>/<strike>, or CSS line-through) — that's
+  // how a "was" price is marked when an item is discounted. Nodes containing
+  // "%" are skipped so discount badges ("-20%") never get mistaken for a price.
   function getPrices(container) {
     if (!container) return [];
-    const priceRegex = /RM\s*([\d,]+\.\d{2})/gi;
     const walker = document.createTreeWalker(container, NodeFilter.SHOW_TEXT);
     const matches = [];
     let node;
     while ((node = walker.nextNode())) {
       const text = node.textContent;
-      if (!text || text.indexOf('RM') === -1) continue;
-      priceRegex.lastIndex = 0;
-      let m;
-      while ((m = priceRegex.exec(text))) {
-        const value = parseFloat(m[1].replace(/,/g, ''));
-        let el = node.parentElement;
-        let struck = false;
-        for (let i = 0; el && i < 5; i++, el = el.parentElement) {
-          const tag = el.tagName;
-          if (tag === 'S' || tag === 'DEL' || tag === 'STRIKE') { struck = true; break; }
-          const style = getComputedStyle(el);
-          if (style && (style.textDecorationLine || style.textDecoration || '').includes('line-through')) {
-            struck = true;
-            break;
-          }
+      if (!text || !/\d/.test(text) || text.indexOf('%') !== -1) continue;
+
+      const numMatch = text.match(/\d[\d.,]*\d|\d/);
+      if (!numMatch) continue;
+      const value = normalizeNumber(numMatch[0]);
+      if (value === null) continue;
+
+      let el = node.parentElement;
+      let struck = false;
+      for (let i = 0; el && i < 5; i++, el = el.parentElement) {
+        const tag = el.tagName;
+        if (tag === 'S' || tag === 'DEL' || tag === 'STRIKE') { struck = true; break; }
+        const style = getComputedStyle(el);
+        if (style && (style.textDecorationLine || style.textDecoration || '').includes('line-through')) {
+          struck = true;
+          break;
         }
-        matches.push({ value, struck });
       }
+      matches.push({ value, struck });
     }
     return matches;
   }
@@ -130,7 +151,7 @@
   function exportVisibleToCSV() {
     const items = findRows().map(parseRow).filter((item) => item.wrapper.style.display !== 'none');
 
-    const header = ['Title', 'Platform', 'Price (RM)', 'Original Price (RM)', 'Discount %', 'On Sale', 'Link'];
+    const header = ['Title', 'Platform', 'Price', 'Original Price', 'Discount %', 'On Sale', 'Link'];
     const lines = [header.join(',')];
 
     items.forEach((item) => {
@@ -307,7 +328,7 @@
       <label for="psw-search">Search title</label>
       <input type="text" id="psw-search" placeholder="e.g. Persona" />
 
-      <label>Price range (RM)</label>
+      <label>Price range</label>
       <div class="psw-price-row">
         <input type="number" id="psw-min" placeholder="Min" min="0" />
         <input type="number" id="psw-max" placeholder="Max" min="0" />
